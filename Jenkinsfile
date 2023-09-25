@@ -3,6 +3,7 @@ pipeline{
     parameters {
       choice choices: ['Dev', 'Test', 'Prod'], description: 'Choose the environment to deploy', name: 'envName'
     }
+
     stages{
         stage("Maven Build"){
             when {
