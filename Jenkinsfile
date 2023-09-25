@@ -1,12 +1,12 @@
 pipeline{
     agent any
     parameters {
-      choice choices: ['dev', 'test', 'prod'], description: 'Choose the environment to deploy', name: 'envName'
+      choice choices: ['Dev', 'Test', 'Prod'], description: 'Choose the environment to deploy', name: 'envName'
     }
     stages{
         stage("Maven Build"){
             when {
-                expression { params.envName == "dev" }
+                expression { params.envName == "Dev" }
             }
             steps{
                sh "mvn clean package" 
@@ -14,7 +14,7 @@ pipeline{
         }
         stage("Deploy To Dev"){
             when {
-                expression { params.envName == "dev" }
+                expression { params.envName == "Dev" }
             }
             steps{
                 echo params.envName
@@ -23,7 +23,7 @@ pipeline{
         }
         stage("Deploy To Test"){
             when {
-                expression { params.envName == "test" }
+                expression { params.envName == "Test" }
             }
             steps{
                 echo "Deploy to test"
@@ -31,7 +31,7 @@ pipeline{
         }
         stage("Deploy To Prod"){
             when {
-                expression { params.envName == "prod" }
+                expression { params.envName == "Prod" }
             }
             steps{
                 echo "Deploy to prod"
