@@ -1,23 +1,40 @@
 pipeline{
     agent any
     parameters {
-      choice choices: ['Dev', 'Test', 'Prod'], description: 'Choose the environment to deploy', name: 'envName'
+      choice choices: ['dev', 'test', 'prod'], description: 'Choose the environment to deploy', name: 'envName'
     }
     stages{
-        stage("maven build"){
+        stage("Maven Build"){
+            when {
+                expression { params.envName == "dev" }
+            }
             steps{
-                  sh "mvn clean package" 
-
+               sh "mvn clean package" 
             }
         }
-        stage("copy tomcat"){
+        stage("Deploy To Dev"){
+            when {
+                expression { params.envName == "dev" }
+            }
             steps{
-                  sshagent(['tomcat']) {
-                    sh "scp -o StrictHostKeyChecking=no target/doctor-online.war ec2-user@172.31.46.80:/opt/tomcat9/webapps"
-                    sh "ssh ec2-user@172.31.46.80 /opt/tomcat9/bin/shutdown.sh"
-                    sh "ssh ec2-user@172.31.46.80 /opt/tomcat9/bin/startup.sh"
-                }
-
+                echo params.envName
+                echo "Deploy to dev"
+            }
+        }
+        stage("Deploy To Test"){
+            when {
+                expression { params.envName == "test" }
+            }
+            steps{
+                echo "Deploy to test"
+            }
+        }
+        stage("Deploy To Prod"){
+            when {
+                expression { params.envName == "prod" }
+            }
+            steps{
+                echo "Deploy to prod"
             }
         }
     }
