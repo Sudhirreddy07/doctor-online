@@ -1,11 +1,6 @@
 pipeline{
     agent any
     stages{
-        stage("git colab"){
-            steps{
-                git branch: 'main', credentialsId: 'b1986d74-467e-4153-877d-bf6d081ead7a', url: 'https://github.com/Sudhirreddy07/doctor-online'            
-            }
-        }
         stage("maven build"){
             steps{
                   sh "mvn clean package" 
