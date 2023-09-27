@@ -30,13 +30,7 @@ pipeline {
                         repoName = "doctor-online-snapshot"
                     }
 
-                    def pom_version_array = version.split('\\.')
-                    // You can choose any part of the version you want to update
-                    pom_version_array[1] = "${pom_version_array[1].toInteger() + 1}"
-                    pom.version = pom_version_array.join('.')
-
-                    writeMavenPom model: pom
-
+                   
                     nexusArtifactUploader artifacts: [[
                         artifactId: 'doctor-online',
                         classifier: '',
