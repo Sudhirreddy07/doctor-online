@@ -1,65 +1,67 @@
-pipeline{
+pipeline {
     agent any
     parameters {
-      choice choices: [ 'Prod','Dev'], description: 'Choose the environment to deploy', name: 'envName'
+        choice(choices: ['Prod', 'Dev'], description: 'Choose the environment to deploy', name: 'envName')
     }
 
-    stages{
-        stage("Maven Build"){
+    stages {
+        stage("Maven Build") {
             when {
                 expression { params.envName == "Dev" }
             }
-            steps{
-               sh "mvn clean package" 
+            steps {
+                sh "mvn clean package"
             }
         }
-        stage("nexus upload"){
+
+        stage("Nexus Upload") {
             when {
                 expression { params.envName == "Prod" }
             }
-            steps{
-                script{
+            steps {
+                script {
                     def pom = readMavenPom file: 'pom.xml'
                     def version = pom.version
-                    def repoName = "doctor-online-release"
-                    if(params.envName == "Prod"){
-                       repoName = "doctor-online-release"
+                    def repoName
+
+                    if (params.envName == "Prod") {
+                        repoName = "doctor-online-release"
+                    } else {
+                        repoName = "doctor-online-snapshot"
                     }
-                    elif{
-                       repoName = "doctor-online-snapshot"
-                    }
-                        
-                    
-                    pom_version_array = pom.version.split('\\.')
-                    
+
+                    def pom_version_array = version.split('\\.')
                     // You can choose any part of the version you want to update
-                    pom_version_array[1] = "${pom_version_array[1]}".toInteger() + 1
-                    
+                    pom_version_array[1] = "${pom_version_array[1].toInteger() + 1}"
                     pom.version = pom_version_array.join('.')
-                    
+
                     writeMavenPom model: pom
-                    
-                nexusArtifactUploader artifacts: [[artifactId: 'doctor-online', classifier: '', file: 'target/doctor-online.war', type: 'war']],
-                credentialsId: 'nexus',
-                groupId: 'in.javahome',
-                nexusUrl: '54.242.184.150:8081',
-                nexusVersion: 'nexus3',
-                protocol: 'http', 
-                repository: rapoName,
-                version: '1.0-SNAPSHOT'
-            
+
+                    nexusArtifactUploader artifacts: [[
+                        artifactId: 'doctor-online',
+                        classifier: '',
+                        file: 'target/doctor-online.war',
+                        type: 'war'
+                    ]],
+                    credentialsId: 'nexus',
+                    groupId: 'in.javahome',
+                    nexusUrl: 'http://54.242.184.150:8081', // Ensure you use the correct URL format
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: repoName, // Use the 'repoName' variable
+                    version: version
                 }
-               }
+            }
         }
-        stage("Deploy To Dev"){
+
+        stage("Deploy To Dev") {
             when {
                 expression { params.envName == "Dev" }
             }
-            steps{
-                echo params.envName
-                echo "Deploy to dev"
+            steps {
+                echo "Deploying to dev"
+                // Add your deployment steps for the 'Dev' environment here
             }
         }
-     
     }
 }
