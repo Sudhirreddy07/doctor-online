@@ -21,16 +21,16 @@ pipeline {
             steps {
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    def version = pom.version
-                    def repoName
+                    def pom_version_array = pom.version.split('\\.')
 
-                    if (params.envName == "Prod") {
-                        repoName = "doctor-online-release"
-                    } else {
-                        repoName = "doctor-online-snapshot"
-                    }
+                    // Increment the minor version
+                    pom_version_array[1] = "${pom_version_array[1].toInteger() + 1}"
+                    
+                    // Join the version parts back together
+                    pom.version = pom_version_array.join('.')
 
-                   
+                    writeMavenPom model: pom
+
                     nexusArtifactUploader artifacts: [[
                         artifactId: 'doctor-online',
                         classifier: '',
@@ -39,11 +39,11 @@ pipeline {
                     ]],
                     credentialsId: 'nexus',
                     groupId: 'in.javahome',
-                    nexusUrl: '54.242.184.150:8081', // Ensure you use the correct URL format
+                    nexusUrl: 'http://54.242.184.150:8081',
                     nexusVersion: 'nexus3',
                     protocol: 'http',
-                    repository: repoName, // Use the 'repoName' variable
-                    version: version
+                    repository: 'doctor-online-release',
+                    version: pom.version // Use the version from the POM
                 }
             }
         }
