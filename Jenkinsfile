@@ -45,7 +45,7 @@ pipeline {
                     ]],
                     credentialsId: 'nexus',
                     groupId: 'in.javahome',
-                    nexusUrl: 'http://54.242.184.150:8081', // Ensure you use the correct URL format
+                    nexusUrl: '54.242.184.150:8081', // Ensure you use the correct URL format
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     repository: repoName, // Use the 'repoName' variable
