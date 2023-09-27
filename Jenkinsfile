@@ -43,7 +43,7 @@ pipeline {
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     repository: 'doctor-online-release',
-                    version: pom.version // Use the version from the POM
+                    version: version // Use the version from the POM
                 }
             }
         }
