@@ -29,7 +29,7 @@ pipeline {
                     // Join the version parts back together
                     pom.version = pom_version_array.join('.')
 
-                    writeMavenPom model: pom.version
+                    writeMavenPom model: pom
 
                     nexusArtifactUploader artifacts: [[
                         artifactId: 'doctor-online',
@@ -43,7 +43,7 @@ pipeline {
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     repository: 'doctor-online-release',
-                    version: version // Use the version from the POM
+                    version: pom.version // Use the version from the POM
                 }
             }
         }
