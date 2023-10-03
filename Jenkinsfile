@@ -54,5 +54,17 @@ pipeline {
                 // Add your deployment steps for the 'Dev' environment here
             }
         }
+         stage("slack") {
+            steps {
+                slackSend(
+                        channel: 'jenkines-demo',
+                        message: "Current build result is ${currentBuild.result}",
+                        teamDomain: 'java-home',
+                        tokenCredentialId: 'slack-notify1',
+                        username: 'java home'
+                    )
+
+            }
+        }
     }
 }
